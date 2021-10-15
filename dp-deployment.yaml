@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../docker-app/docker-compose.yml
+    kompose.version: 1.24.0 (4a2a0458)
+  labels:
+    io.kompose.service: dp
+  name: dp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: dp
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ../docker-app/docker-compose.yml
+        kompose.version: 1.24.0 (4a2a0458)
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: dp
+    spec:
+      containers:
+        - image: dravenk/dp:latest
+          name: dp
+          ports:
+            - containerPort: 80
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: dp-claim0
+      restartPolicy: Always
+      volumes:
+        - name: dp-claim0
+          persistentVolumeClaim:
+            claimName: dp-pvc
+status: {}
